@@ -11,6 +11,9 @@
     <WinUISDKReferences>false</WinUISDKReferences>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="CardView.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -23,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ThreeHandedEuchre.Core\ThreeHandedEuchre.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="CardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
     <!-- Publish Properties -->

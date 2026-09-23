@@ -8,32 +8,94 @@ public sealed class Game
 
     private readonly Random _random = new();
 
+    private int _currentBidderPosition;
+    private int _bidsThisRound;
+
+    public Player CurrentBidder =>
+        State.Players[_currentBidderPosition];
+
     public Game()
     {
         State = new GameState();
     }
 
-    public void Start()
+    //public void Start()
+    //{
+    //    while (!State.Players.Any(player => player.Score >= 10))
+    //    {
+    //        State.Deal();
+
+    //        bool trumpSelected =
+    //            RunFirstBiddingRound() ||
+    //            RunSecondBiddingRound();
+
+    //        if (!trumpSelected)
+    //        {
+    //            // Misdeal: nobody selected trump.
+    //            State.AdvanceDealer();
+    //            continue;
+    //        }
+
+    //        PlayHand();
+
+    //        State.AdvanceDealer();
+    //    }
+    //}
+
+    public bool CurrentBidderShouldOrderUp()
     {
-        while (!State.Players.Any(player => player.Score >= 10))
+        return AiPlayer.ShouldOrderUp(
+            CurrentBidder,
+            State.UpCard!,
+            State.DealerPosition);
+    }
+
+    public void StartFirstBiddingRound()
+    {
+        _currentBidderPosition =
+            (State.DealerPosition + 1) % State.Players.Count;
+
+        _bidsThisRound = 0;
+    }
+
+    public void StartSecondBiddingRound()
+    {
+        _currentBidderPosition =
+            (State.DealerPosition + 1) % State.Players.Count;
+
+        _bidsThisRound = 0;
+    }
+
+    public void AdvanceBidder()
+    {
+        _bidsThisRound++;
+
+        _currentBidderPosition =
+            (_currentBidderPosition + 1) % State.Players.Count;
+    }
+
+    public bool BiddingRoundComplete =>
+        _bidsThisRound >= State.Players.Count;
+
+    public bool ProcessCurrentAiBid()
+    {
+        Player player = CurrentBidder;
+
+        bool orderedUp = AiPlayer.ShouldOrderUp(
+            player,
+            State.UpCard!,
+            State.DealerPosition);
+
+        if (orderedUp)
         {
-            State.Deal();
-
-            bool trumpSelected =
-                RunFirstBiddingRound() ||
-                RunSecondBiddingRound();
-
-            if (!trumpSelected)
-            {
-                // Misdeal: nobody selected trump.
-                State.AdvanceDealer();
-                continue;
-            }
-
-            PlayHand();
-
-            State.AdvanceDealer();
+            State.OrderUp(player.Position);
+            return true;
         }
+
+        _currentBidderPosition =
+            (_currentBidderPosition + 1) % State.Players.Count;
+
+        return false;
     }
 
     private bool RunFirstBiddingRound()

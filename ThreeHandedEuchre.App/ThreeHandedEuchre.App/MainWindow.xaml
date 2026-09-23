@@ -1,7 +1,8 @@
 <Window
     x:Class="ThreeHandedEuchre.App.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ThreeHandedEuchre.App">
 
     <Grid Background="Black">
 
@@ -24,7 +25,7 @@
 
                 <!-- SCORES -->
 
-                <TextBlock Text="Player 2 (AI-1): 0"
+                <TextBlock Text="Player 3 (AI-2): 0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Margin="75,15,0,0"
@@ -40,7 +41,7 @@
                            FontWeight="SemiBold"
                            Foreground="White"/>
 
-                <TextBlock Text="Player 3 (AI-2): 0"
+                <TextBlock Text="Player 2 (AI-1): 0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
                            Margin="0,15,75,0"
@@ -49,12 +50,14 @@
                            Foreground="White"/>
 
 
-                <!-- LEFT AI HAND -->
-                <StackPanel Orientation="Vertical"
+                <!-- LEFT: PLAYER 3 -->
+                <StackPanel x:Name="Player3Hand"
+                            Orientation="Vertical"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Margin="75,0,0,0"
-                            Spacing="8">
+                            Spacing="8"
+                            Visibility="Collapsed">
 
                     <Image Source="/Assets/Images/Cards/card_back.png"
                             Width="90" Height="60" Stretch="Fill"/>
@@ -68,12 +71,14 @@
                             Width="90" Height="60" Stretch="Fill"/>
                 </StackPanel>
 
-                <!-- RIGHT AI HAND -->
-                <StackPanel Orientation="Vertical"
+                <!-- RIGHT: PLAYER 2 -->
+                <StackPanel x:Name="Player2Hand"
+                            Orientation="Vertical"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Margin="0,0,55,0"
-                            Spacing="8">
+                            Spacing="8"
+                            Visibility="Collapsed">
 
                     <Image Source="/Assets/Images/Cards/card_back.png"
                             Width="90" Height="60" Stretch="Fill"/>
@@ -87,30 +92,41 @@
                             Width="90" Height="60" Stretch="Fill"/>
                 </StackPanel>
 
-                <!-- HUMAN HAND -->
-                <StackPanel Orientation="Horizontal"
+                <!-- HUMAN: PLAYER 1 -->
+                <StackPanel x:Name="Player1Hand"
+                            Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Bottom"
                             Margin="0,0,0,65"
-                            Spacing="8">
+                            Spacing="8"
+                            Visibility="Collapsed">
 
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="68" Height="102" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="68" Height="102" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="68" Height="102" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="68" Height="102" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="68" Height="102" Stretch="Fill"/>
+                    <Image x:Name="HumanCard0"
+                           Source="/Assets/Images/Cards/card_back.png"
+                           Width="68" Height="102"/>
+
+                    <Image x:Name="HumanCard1"
+                           Source="/Assets/Images/Cards/card_back.png"
+                           Width="68" Height="102"/>
+
+                    <Image x:Name="HumanCard2"
+                           Source="/Assets/Images/Cards/card_back.png"
+                           Width="68" Height="102"/>
+
+                    <Image x:Name="HumanCard3"
+                           Source="/Assets/Images/Cards/card_back.png"
+                           Width="68" Height="102"/>
+
+                    <Image x:Name="HumanCard4"
+                           Source="/Assets/Images/Cards/card_back.png"
+                           Width="68" Height="102"/>
                 </StackPanel>
 
                 <!-- BOTTOM STATUS / CONTROLS -->
 
                 <!-- Dealer -->
                 <TextBlock x:Name="DealerText"
-                           Text="Dealer: Player 1"
+                           Text="Dealer: --"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
                            Margin="75,0,0,22"
@@ -127,22 +143,28 @@
                             Spacing="8">
 
                     <Button x:Name="ActionButton1"
-                            Content="Pickup"
-                            MinWidth="80"/>
+                            Content="Play"
+                            MinWidth="80"
+                            Click="ActionButton1_Click"/>
 
                     <Button x:Name="ActionButton2"
-                            Content="Pass"
-                            MinWidth="80"/>
+                            Content=""
+                            MinWidth="80"
+                            Visibility="Collapsed"
+                            Click="ActionButton2_Click"/>
 
                     <Button x:Name="ActionButton3"
                             Content=""
                             MinWidth="80"
-                            Visibility="Collapsed"/>
+                            Visibility="Collapsed"
+                            Click="ActionButton3_Click"/>
 
                     <Button x:Name="ActionButton4"
                             Content=""
                             MinWidth="80"
-                            Visibility="Collapsed"/>
+                            Visibility="Collapsed"
+                            Click="ActionButton4_Click"/>
+
                 </StackPanel>
 
                 <!-- Trump -->
@@ -155,50 +177,28 @@
                            FontWeight="SemiBold"
                            Foreground="White"/>
 
+                <TextBlock x:Name="GameMessage"
+                           Text=""
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="0,-30,0,0"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="White"
+                           Visibility="Collapsed"/>
+
 
                 <!-- ========================================
                      KITTY / UP CARD
                      ======================================== -->
 
-                <Grid x:Name="UpCard"
-                      Width="68"
-                      Height="102"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Top"
-                      Margin="0,75,0,0">
-
-                    <!-- Blank card face -->
-                    <Image Source="/Assets/Images/Cards/card_face.png"
-                           Width="68"
-                           Height="102"
-                           Stretch="Fill"/>
-
-                    <!-- Upper-left index -->
-                    <StackPanel HorizontalAlignment="Left"
+                <local:CardView x:Name="UpCard"
+                                Width="68"
+                                Height="102"
+                                HorizontalAlignment="Center"
                                 VerticalAlignment="Top"
-                                Margin="12,7,0,0"
-                                Spacing="-7">
-
-                        <TextBlock Text="A"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="DarkRed"
-                                   HorizontalAlignment="Center"/>
-
-                        <TextBlock Text="♥"
-                                   FontSize="15"
-                                   Foreground="DarkRed"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
-
-                    <!-- Large center suit -->
-                    <TextBlock Text="♥"
-                               FontSize="42"
-                               Foreground="DarkRed"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-                </Grid>
-
+                                Margin="0,75,0,0"/>
+                
             </Grid>
 
         </Viewbox>

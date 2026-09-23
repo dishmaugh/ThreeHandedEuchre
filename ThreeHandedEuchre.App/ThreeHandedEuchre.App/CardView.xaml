@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ThreeHandedEuchre.App.CardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid x:Name="CardRoot"
+          Width="68"
+          Height="102">
+
+        <!-- CARD BACK -->
+        <Image x:Name="CardBack"
+               Source="/Assets/Images/Cards/card_back.png"
+               Width="68"
+               Height="102"
+               Stretch="Fill"/>
+
+        <!-- CARD FACE -->
+        <Grid x:Name="CardFace"
+              Visibility="Collapsed">
+
+            <Image Source="/Assets/Images/Cards/card_face.png"
+                   Width="68"
+                   Height="102"
+                   Stretch="Fill"/>
+
+            <!-- Upper-left index -->
+            <StackPanel HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="12,7,0,0"
+                        Spacing="-7">
+
+                <TextBlock x:Name="RankText"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock x:Name="SmallSuitText"
+                           FontSize="15"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Large center suit -->
+            <TextBlock x:Name="SuitText"
+                       FontSize="42"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Grid>
+    </Grid>
+</UserControl>

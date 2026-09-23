@@ -86,20 +86,52 @@ public sealed class GameState
 
         dealer.AddCard(UpCard);
 
+        Trump = trump;
+        CallerPosition = callerPosition;
+
+        _kitty.Remove(UpCard);
+
+        // Human dealer must choose the discard manually.
+        if (DealerPosition == 0)
+        {
+            UpCard = null;
+            return;
+        }
+
         Card discard = AiPlayer.ChooseDiscard(
             dealer.Hand,
             trump);
 
         dealer.RemoveCard(discard);
-
-        Trump = trump;
-        CallerPosition = callerPosition;
-
-        _kitty.Remove(UpCard);
         _kitty.Add(discard);
 
         UpCard = null;
     }
+
+    //public void OrderUp(int callerPosition)
+    //{
+    //    if (UpCard is null)
+    //        throw new InvalidOperationException("There is no up card.");
+
+    //    Suit trump = UpCard.Suit;
+    //    Player dealer = _players[DealerPosition];
+
+    //    dealer.AddCard(UpCard);
+
+    //    Card discard = AiPlayer.ChooseDiscard(
+    //        dealer.Hand,
+    //        trump);
+
+    //    dealer.RemoveCard(discard);
+
+    //    Trump = trump;
+    //    CallerPosition = callerPosition;
+
+    //    _kitty.Remove(UpCard);
+    //    _kitty.Add(discard);
+
+    //    UpCard = null;
+    //}
 
     public List<PlayedCard> PlayTrick(int leaderPosition, Random random)
     {
