@@ -2,6 +2,7 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using System;
 using ThreeHandedEuchre.Core;
 
 namespace ThreeHandedEuchre.App
@@ -12,10 +13,19 @@ namespace ThreeHandedEuchre.App
 
         public Card? Card => _card;
 
+        public event EventHandler? CardClicked;
+
         public CardView()
         {
             InitializeComponent();
             Clear();
+        }
+
+        private void CardView_Tapped(
+            object sender,
+            Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            CardClicked?.Invoke(this, EventArgs.Empty);
         }
 
         public void SetCard(Card card)
@@ -70,7 +80,7 @@ namespace ThreeHandedEuchre.App
         private static string RankTextFor(Rank rank) =>
             rank switch
             {
-               Rank.Ten => "10",
+                Rank.Ten => "10",
                 Rank.Jack => "J",
                 Rank.Queen => "Q",
                 Rank.King => "K",

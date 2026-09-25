@@ -29,6 +29,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Assets\Images\Backgrounds\euchre_table.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Images\Cards\card_back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Images\Cards\card_face.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="CardView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -36,9 +36,9 @@ public static class EuchreRules
     }
 
     public static PlayedCard GetTrickWinner(
-    IReadOnlyList<PlayedCard> trick,
-    Suit ledSuit,
-    Suit trump)
+        IReadOnlyList<PlayedCard> trick,
+        Suit ledSuit,
+        Suit trump)
     {
         return trick
             .OrderByDescending(play => GetTrickValue(play.Card, ledSuit, trump))

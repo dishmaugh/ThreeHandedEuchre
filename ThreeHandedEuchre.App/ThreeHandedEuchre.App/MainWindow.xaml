@@ -25,7 +25,8 @@
 
                 <!-- SCORES -->
 
-                <TextBlock Text="Player 3 (AI-2): 0"
+                <TextBlock x:Name="Player3ScoreText"
+                           Text="Player 3 (AI-2): 0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Margin="75,15,0,0"
@@ -33,7 +34,8 @@
                            FontWeight="SemiBold"
                            Foreground="White"/>
 
-                <TextBlock Text="Player 1 (Human): 0"
+                <TextBlock x:Name="Player1ScoreText"
+                           Text="Player 1 (Human): 0"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0,15,0,0"
@@ -41,7 +43,8 @@
                            FontWeight="SemiBold"
                            Foreground="White"/>
 
-                <TextBlock Text="Player 2 (AI-1): 0"
+                <TextBlock x:Name="Player2ScoreText"
+                           Text="Player 2 (AI-1): 0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
                            Margin="0,15,75,0"
@@ -49,47 +52,88 @@
                            FontWeight="SemiBold"
                            Foreground="White"/>
 
+                <!-- CARDS IN PLAY -->
+                <Grid HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Margin="0,-200,0,0"
+                      Width="300"
+                      Height="260">
+
+                    <!-- Player 3 -->
+                    <local:CardView x:Name="PlayedCard3"
+                                    Width="68"
+                                    Height="102"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    RenderTransformOrigin="0.5,0.5">
+                        <local:CardView.RenderTransform>
+                            <RotateTransform Angle="90"/>
+                        </local:CardView.RenderTransform>
+                    </local:CardView>
+
+                    <!-- Player 2 -->
+                    <local:CardView x:Name="PlayedCard2"
+                                    Width="68"
+                                    Height="102"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    RenderTransformOrigin="0.5,0.5">
+                        <local:CardView.RenderTransform>
+                            <RotateTransform Angle="-90"/>
+                        </local:CardView.RenderTransform>
+                    </local:CardView>
+
+                    <!-- Player 1 -->
+                    <local:CardView x:Name="PlayedCard1"
+                                    Width="68"
+                                    Height="102"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"/>
+                </Grid>
+
 
                 <!-- LEFT: PLAYER 3 -->
                 <StackPanel x:Name="Player3Hand"
-                            Orientation="Vertical"
+                            Orientation="Horizontal"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Margin="75,0,0,0"
+                            Margin="-50,0,0,0"
                             Spacing="8"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            RenderTransformOrigin="0.5,0.5">
 
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
+                    <StackPanel.RenderTransform>
+                        <RotateTransform Angle="90"/>
+                    </StackPanel.RenderTransform>
+
+                    <local:CardView x:Name="Player3Card0" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player3Card1" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player3Card2" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player3Card3" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player3Card4" Width="68" Height="102"/>
+
                 </StackPanel>
 
                 <!-- RIGHT: PLAYER 2 -->
                 <StackPanel x:Name="Player2Hand"
-                            Orientation="Vertical"
+                            Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Margin="0,0,55,0"
+                            Margin="0,0,-50,0"
                             Spacing="8"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            RenderTransformOrigin="0.5,0.5">
 
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
-                    <Image Source="/Assets/Images/Cards/card_back.png"
-                            Width="90" Height="60" Stretch="Fill"/>
+                    <StackPanel.RenderTransform>
+                        <RotateTransform Angle="-90"/>
+                    </StackPanel.RenderTransform>
+
+                    <local:CardView x:Name="Player2Card0" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player2Card1" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player2Card2" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player2Card3" Width="68" Height="102"/>
+                    <local:CardView x:Name="Player2Card4" Width="68" Height="102"/>
+
                 </StackPanel>
 
                 <!-- HUMAN: PLAYER 1 -->
@@ -101,25 +145,12 @@
                             Spacing="8"
                             Visibility="Collapsed">
 
-                    <Image x:Name="HumanCard0"
-                           Source="/Assets/Images/Cards/card_back.png"
-                           Width="68" Height="102"/>
-
-                    <Image x:Name="HumanCard1"
-                           Source="/Assets/Images/Cards/card_back.png"
-                           Width="68" Height="102"/>
-
-                    <Image x:Name="HumanCard2"
-                           Source="/Assets/Images/Cards/card_back.png"
-                           Width="68" Height="102"/>
-
-                    <Image x:Name="HumanCard3"
-                           Source="/Assets/Images/Cards/card_back.png"
-                           Width="68" Height="102"/>
-
-                    <Image x:Name="HumanCard4"
-                           Source="/Assets/Images/Cards/card_back.png"
-                           Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard0" Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard1" Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard2" Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard3" Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard4" Width="68" Height="102"/>
+                    <local:CardView x:Name="HumanCard5" Width="68" Height="102"/>
                 </StackPanel>
 
                 <!-- BOTTOM STATUS / CONTROLS -->

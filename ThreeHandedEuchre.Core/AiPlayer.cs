@@ -148,19 +148,6 @@ public static class AiPlayer
         return Math.Min(5.0, tricks);
     }
 
-    private static double GetUpCardPenalty(Card upCard)
-    {
-        return upCard.Rank switch
-        {
-            Rank.Jack => 0.75,   // Guaranteed right bower for dealer
-            Rank.Ace => 0.50,
-            Rank.King => 0.35,
-            Rank.Queen => 0.20,
-            Rank.Ten => 0.10,
-            _ => 0
-        };
-    }
-
     private static double EstimateOffSuitTricks(
         IReadOnlyList<Card> cards)
     {
@@ -237,18 +224,5 @@ public static class AiPlayer
         }
 
         return bestDiscard!;
-    }
-
-    private static double GetDiscardValue(Card card)
-    {
-        return card.Rank switch
-        {
-            Rank.Ace => 5,
-            Rank.King => 4,
-            Rank.Queen => 3,
-            Rank.Jack => 2,
-            Rank.Ten => 1,
-            _ => 0
-        };
     }
 }

@@ -18,6 +18,8 @@ public sealed class GameState
 
     public Card? UpCard { get; private set; }
 
+    public Card? KnownUpCard { get; private set; }
+
     public Suit? Trump { get; private set; }
 
     public int? CallerPosition { get; private set; }
@@ -32,9 +34,36 @@ public sealed class GameState
 
     public sealed record PlayedCard(Player Player, Card Card);
 
+    private readonly List<PlayedCard> _currentTrick = [];
+
+    public IReadOnlyList<PlayedCard> CurrentTrick => _currentTrick;
+
+    public int LeaderPosition { get; private set; }
+
+    public bool HandComplete =>
+        _players.Sum(player => player.TricksWon) == 5;
+
     public GameState()
     {
         DealerPosition = Random.Shared.Next(_players.Count);
+    }
+
+    public void StartHandPlay()
+    {
+        LeaderPosition = (DealerPosition + 1) % _players.Count;
+        _currentTrick.Clear();
+    }
+
+    public PlayedCard PlayCard(int playerPosition, Card card)
+    {
+        Player player = _players[playerPosition];
+
+        player.RemoveCard(card);
+
+        var playedCard = new PlayedCard(player, card);
+        _currentTrick.Add(playedCard);
+
+        return playedCard;
     }
 
     public void Deal()
@@ -47,6 +76,12 @@ public sealed class GameState
 
         _kitty.Clear();
         UpCard = null;
+        KnownUpCard = null;
+
+        foreach (Player player in _players)
+        {
+            player.TricksWon = 0;
+        }
 
         int firstPlayer = (DealerPosition + 1) % _players.Count;
 
@@ -67,6 +102,57 @@ public sealed class GameState
         UpCard = _kitty[0];
     }
 
+    public void ScoreHand()
+    {
+        if (!CallerPosition.HasValue)
+            throw new InvalidOperationException("There is no caller.");
+
+        Player caller = _players[CallerPosition.Value];
+
+        if (caller.TricksWon == 5)
+        {
+            caller.Score += 4;
+            return;
+        }
+
+        if (caller.TricksWon >= 3)
+        {
+            caller.Score += 1;
+            return;
+        }
+
+        foreach (Player player in _players)
+        {
+            if (player.Position != caller.Position)
+                player.Score += 2;
+        }
+    }
+
+    public Player CompleteTrick()
+    {
+        if (_currentTrick.Count != 3)
+            throw new InvalidOperationException("The trick is not complete.");
+
+        Suit ledSuit = EuchreRules.GetEffectiveSuit(
+            _currentTrick[0].Card,
+            Trump!.Value);
+
+        PlayedCard winningPlay = EuchreRules.GetTrickWinner(
+            _currentTrick,
+            ledSuit,
+            Trump.Value);
+
+        Player winner = winningPlay.Player;
+
+        winner.TricksWon++;
+
+        LeaderPosition = winner.Position;
+
+        _currentTrick.Clear();
+
+        return winner;
+    }
+
     public void SetTrump(
         Suit trump,
         int callerPosition)
@@ -76,85 +162,68 @@ public sealed class GameState
         UpCard = null;
     }
 
-    public void OrderUp(int callerPosition)
+    public Card? OrderUp(int callerPosition)
     {
         if (UpCard is null)
             throw new InvalidOperationException("There is no up card.");
 
-        Suit trump = UpCard.Suit;
+        Card upCard = UpCard;
+        KnownUpCard = upCard;
+        Suit trump = upCard.Suit;
         Player dealer = _players[DealerPosition];
-
-        dealer.AddCard(UpCard);
 
         Trump = trump;
         CallerPosition = callerPosition;
 
-        _kitty.Remove(UpCard);
+        _kitty.Remove(upCard);
 
-        // Human dealer must choose the discard manually.
+        // Human dealer will choose the discard manually later.
         if (DealerPosition == 0)
         {
+            dealer.AddCard(upCard);
             UpCard = null;
-            return;
+            return null;
         }
+
+        // AI dealer temporarily has six cards so it can choose
+        // the best five-card hand.
+        dealer.AddCard(upCard);
 
         Card discard = AiPlayer.ChooseDiscard(
             dealer.Hand,
             trump);
 
+        int discardIndex = dealer.Hand
+            .ToList()
+            .FindIndex(card => ReferenceEquals(card, discard));
+
         dealer.RemoveCard(discard);
-        _kitty.Add(discard);
+        AddToKitty(discard);
 
-        UpCard = null;
-    }
-
-    //public void OrderUp(int callerPosition)
-    //{
-    //    if (UpCard is null)
-    //        throw new InvalidOperationException("There is no up card.");
-
-    //    Suit trump = UpCard.Suit;
-    //    Player dealer = _players[DealerPosition];
-
-    //    dealer.AddCard(UpCard);
-
-    //    Card discard = AiPlayer.ChooseDiscard(
-    //        dealer.Hand,
-    //        trump);
-
-    //    dealer.RemoveCard(discard);
-
-    //    Trump = trump;
-    //    CallerPosition = callerPosition;
-
-    //    _kitty.Remove(UpCard);
-    //    _kitty.Add(discard);
-
-    //    UpCard = null;
-    //}
-
-    public List<PlayedCard> PlayTrick(int leaderPosition, Random random)
-    {
-        if (Trump is null)
-            throw new InvalidOperationException("Trump has not been selected.");
-
-        var trick = new List<PlayedCard>();
-        Suit? ledSuit = null;
-
-        for (int offset = 0; offset < _players.Count; offset++)
+        // If the AI discarded one of its original five cards,
+        // move the up card into that card's position.
+        if (!ReferenceEquals(discard, upCard))
         {
-            int position = (leaderPosition + offset) % _players.Count;
-            Player player = _players[position];
-
-            Card card = player.ChooseCard(ledSuit, Trump.Value, random);
-
-            player.RemoveCard(card);
-            trick.Add(new PlayedCard(player, card));
-
-            ledSuit ??= EuchreRules.GetEffectiveSuit(card, Trump.Value);
+            dealer.RemoveCard(upCard);
+            dealer.InsertCard(discardIndex, upCard);
         }
 
-        return trick;
+        UpCard = null;
+
+        return discard;
+    }
+
+    public void DiscardFromHumanHand(Card card)
+    {
+        Player human = _players[0];
+
+        human.RemoveCard(card);
+        AddToKitty(card);
+    }
+
+    public void AddToKitty(Card card)
+    {
+        _kitty.Add(card);
     }
 
     public void AdvanceDealer()

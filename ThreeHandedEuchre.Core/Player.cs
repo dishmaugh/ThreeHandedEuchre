@@ -7,6 +7,8 @@ public sealed class Player
     public int Position { get; }
     public string Name { get; }
     public int Score { get; set; }
+    public int TricksWon { get; set; }
+
     public IReadOnlyList<Card> Hand => _hand;
 
     public Player(int position, string name)
@@ -48,5 +50,10 @@ public sealed class Player
             return followingCards[random.Next(followingCards.Count)];
 
         return Hand[random.Next(Hand.Count)];
+    }
+
+    public void InsertCard(int index, Card card)
+    {
+        _hand.Insert(index, card);
     }
 }
